@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SW2_API.Controllers
@@ -12,6 +13,8 @@ namespace SW2_API.Controllers
     {
         // GET api/values
         [HttpGet]
+        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };

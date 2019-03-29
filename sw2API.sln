@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SW2 API", "SW2 API\SW2 API.csproj", "{395F59AF-20E9-4132-A26C-327311EDF5BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sw2API", "SW2 API\sw2API.csproj", "{395F59AF-20E9-4132-A26C-327311EDF5BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
