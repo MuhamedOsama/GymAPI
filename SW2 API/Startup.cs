@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,7 +71,7 @@ namespace SW2_API
                     options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
                 }
             ).AddJsonFormatters();
-
+            services.AddOData();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,7 +92,11 @@ namespace SW2_API
                 .AllowAnyHeader()); 
             app.UseHttpsRedirection();
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseMvc(RouteBuilder =>
+            {
+                RouteBuilder.EnableDependencyInjection();
+                RouteBuilder.Expand().Select().Count().OrderBy().Filter();
+            });
             ApplicationDbInitializer.SeedUsers(userManager);
         }
     }

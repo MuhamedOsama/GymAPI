@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using sw2API.Entities;
 
 namespace SW2_API.Controllers
 {
@@ -13,11 +15,15 @@ namespace SW2_API.Controllers
     {
         // GET api/values
         [HttpGet]
-        [Authorize]
-        [Authorize(Policy = "AdminOnly")]
-        public ActionResult<IEnumerable<string>> Get()
+        [EnableQuery()]
+        public ActionResult<IEnumerable<Customer>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new List<Customer>
+            {
+                new Customer {FirstName = "Mohamed", LastName = "Osama", Age = 20, Gender = 1, Score = 65},
+                new Customer {FirstName = "Salma", LastName = "Osama", Age = 22, Gender = 2, Score = 90},
+                new Customer {FirstName = "Mohamed", LastName = "Hossam", Age = 19, Gender = 1, Score = 78}
+            };
         }
 
         // GET api/values/5
