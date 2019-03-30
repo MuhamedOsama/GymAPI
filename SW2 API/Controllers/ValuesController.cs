@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using sw2API.Entities;
+using sw2API.Models;
 
 namespace SW2_API.Controllers
 {

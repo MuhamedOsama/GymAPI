@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using sw2API.Entities;
 using sw2API.Models;
 
 namespace sw2API.Controllers
@@ -44,8 +43,13 @@ namespace sw2API.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Cashier");
+                return Ok(new { Username = user.UserName });
             }
-            return Ok(new { Username = user.UserName });
+            else
+            {
+                return BadRequest(new {result.Errors});
+            }
+            
         }
 
         [Route("login")] // /login

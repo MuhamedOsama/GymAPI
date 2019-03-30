@@ -18,7 +18,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using sw2API.Data;
-using sw2API.Entities;
 using sw2API.Models;
 
 namespace SW2_API

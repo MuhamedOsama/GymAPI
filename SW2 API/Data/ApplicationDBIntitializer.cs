@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using sw2API.Entities;
+using sw2API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

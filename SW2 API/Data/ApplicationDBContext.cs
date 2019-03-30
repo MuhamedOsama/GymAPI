@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using sw2API.Entities;
 using sw2API.Models;
 
 namespace sw2API.Data
@@ -30,5 +29,7 @@ namespace sw2API.Data
             
             #endregion
         }
+
+        public DbSet<sw2API.Models.ApplicationRole> ApplicationRole { get; set; }
     }
 }

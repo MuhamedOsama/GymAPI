@@ -4,15 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace sw2API.Entities
+namespace sw2API.Models
 {
     public class Customer
     {
         //Name/age/address/Contact phone/Emergency Phone
-        [Required]
         public string FirstName { get; set; }
         //public string MiddleName { get; set; }
-        [Required]
         public string LastName { get; set; }
         //[Required]
         public int Age { get; set; }
