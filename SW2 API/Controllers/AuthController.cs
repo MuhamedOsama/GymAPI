@@ -25,32 +25,7 @@ namespace sw2API.Controllers
             _configuration = configuration;
         }
 
-        //register cashier
-        [Route("registerCashier")]
-        [HttpPost]
-        [Authorize]
-        public async Task<ActionResult> InsertUser([FromBody] RegisterCashierModel model)
-        {
-            var user = new ApplicationUser
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                UserName = model.UserName,
-                PhoneNumber = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString()
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "Cashier");
-                return Ok(new { Username = user.UserName });
-            }
-            else
-            {
-                return BadRequest(new {result.Errors});
-            }
-            
-        }
+        
 
         [Route("login")] // /login
         [HttpPost]

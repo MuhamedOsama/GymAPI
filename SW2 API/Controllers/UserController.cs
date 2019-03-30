@@ -63,6 +63,31 @@ namespace sw2API.Controllers
             //this could be
             //return RedirectToAction("Index", "Home");
         }
+        //register cashier
+        [HttpPost]
+        [Route("registerCashier")]
+        public async Task<ActionResult> CreateUser([FromBody] RegisterCashierModel model)
+        {
+            var user = new ApplicationUser
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                UserName = model.UserName,
+                PhoneNumber = model.PhoneNumber,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Cashier");
+                return Ok(new { Username = user.UserName });
+            }
+            else
+            {
+                return BadRequest(new { result.Errors });
+            }
+
+        }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] ApplicationUser model)
