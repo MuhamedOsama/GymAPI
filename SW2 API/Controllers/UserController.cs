@@ -38,10 +38,13 @@ namespace sw2API.Controllers
 
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditUser([FromBody] ApplicationUser model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditUser([FromRoute] string id,[FromBody] ApplicationUser model)
         {
-
+            if (id != model.Id)
+            {
+                return BadRequest();
+            }
             var user = await _userManager.FindByIdAsync(model.Id);
             user.UserName = model.UserName;
             user.FirstName = model.FirstName;

@@ -14,17 +14,12 @@ namespace SW2_API.Controllers
     public class ValuesController : ControllerBase
     {
         // GET api/values
-        [HttpGet]
-        [EnableQuery()]
-        public ActionResult<IEnumerable<Customer>> Get()
-        {
-            return new List<Customer>
-            {
-                new Customer {FirstName = "Mohamed", LastName = "Osama", Age = 20, Gender = 1, Score = 65},
-                new Customer {FirstName = "Salma", LastName = "Osama", Age = 22, Gender = 2, Score = 90},
-                new Customer {FirstName = "Mohamed", LastName = "Hossam", Age = 19, Gender = 1, Score = 78}
-            };
-        }
+        //[HttpGet]
+        //[EnableQuery()]
+        //public ActionResult<IEnumerable<Customer>> Get()
+        //{
+         //   return new String[]['value'];
+        //}
 
         // GET api/values/5
         [HttpGet("{id}")]
