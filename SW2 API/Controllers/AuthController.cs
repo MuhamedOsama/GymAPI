@@ -32,9 +32,9 @@ namespace sw2API.Controllers
         public async Task<ActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
-            var roles = await _userManager.GetRolesAsync(user);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
+                var roles = await _userManager.GetRolesAsync(user);
                 var claims = new List<Claim>
                 {
                     new Claim("Username", user.UserName)
@@ -42,7 +42,11 @@ namespace sw2API.Controllers
                 if (roles.Contains("Admin"))
                 {
 
-                    claims.Add(new Claim("Admin", ""));
+                    claims.Add(new Claim("Admin",""));
+                }
+                else
+                {
+                    claims.Add(new Claim("Cashier",""));
                 }
                 var signinKey = new SymmetricSecurityKey(
                   Encoding.UTF8.GetBytes(_configuration["Jwt:SigningKey"]));
