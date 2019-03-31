@@ -41,15 +41,11 @@ namespace sw2API.Controllers
         [HttpPost]
         public async Task<IActionResult> EditUser([FromBody] ApplicationUser model)
         {
-            //Get User by the Email passed in.
-            /*It's better practice to find user by the Id, (without exposing the id to the view).
-            However, to keep this example simple, we can find the user by email instead*/
-            var user = await _userManager.FindByEmailAsync(model.Id);
-            //edit user: replace values of UserViewModel properties 
+          
+            var user = await _userManager.FindByIdAsync(model.Id);
             user.UserName = model.UserName;
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
-            //add user to the datacontext (database) and save changes
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
@@ -60,8 +56,7 @@ namespace sw2API.Controllers
                 return BadRequest(new {result.Errors});
             }
 
-            //this could be
-            //return RedirectToAction("Index", "Home");
+            
         }
         //register cashier
         [HttpPost]
