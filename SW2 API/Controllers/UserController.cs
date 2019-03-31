@@ -34,14 +34,14 @@ namespace sw2API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Object>> Get()
         {
-            return _dataContext.Users.Select(u => new {u.Id , u.FirstName, u.LastName, u.UserName, u.PhoneNumber }).ToList();
+            return _dataContext.Users.Select(u => new {u.Id , u.FirstName, u.LastName, u.UserName, u.PhoneNumber }).Where(u=>u.UserName!="admin").ToList();
 
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> EditUser([FromBody] ApplicationUser model)
         {
-          
+
             var user = await _userManager.FindByIdAsync(model.Id);
             user.UserName = model.UserName;
             user.FirstName = model.FirstName;
@@ -88,7 +88,8 @@ namespace sw2API.Controllers
         public async Task<IActionResult> DeleteUser([FromBody] ApplicationUser model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
-            if (user != null)
+
+            if (user != null || user.UserName!="admin")
             {
                 var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
