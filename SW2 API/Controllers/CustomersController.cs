@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sw2API.Data;
+using sw2API.Entities;
 using sw2API.Models;
 
 namespace sw2API.Controllers
@@ -47,6 +48,47 @@ namespace sw2API.Controllers
             }
 
             return Ok(customer);
+        }
+        //PUT: api/customers/CheckIn/5
+        [HttpPut("CheckIn/{id}")]
+        public async Task<IActionResult> CheckInCustomer([FromRoute] int id)
+        {
+           Customer customer = await _context.Customers.FindAsync(id);
+           if (customer != null && customer.DaysLeft>0)
+           {
+               customer.DaysLeft--;
+               var result = _context.SaveChanges();
+               return Ok(new { customer.DaysLeft });
+            }
+           else
+           {
+               return BadRequest("No customer with that id was found or Customer has no more days left");
+           }
+             
+        }
+        //PUT: api/customers/RenewMembership/id
+        [HttpPut("RenewMembership/{id}")]
+        public async Task<IActionResult> RenewMembership([FromRoute] int id)
+        {
+            
+            Customer customer = await _context.Customers.Include("MembershipType").FirstOrDefaultAsync(x => x.Id == id);
+            if (customer != null && customer.DaysLeft == 0)
+            {
+                customer.DaysLeft = customer.MembershipType.DurationInMonths * 30;
+                await _context.SaveChangesAsync();
+                return Ok(new {customer.DaysLeft});
+            }
+            else
+            {
+                if (customer==null)
+                {
+                    return NotFound(new {message = "Customer with that id was not found"});
+                }
+                else
+                {
+                    return BadRequest(new { message = "customer membership hasn't ended yet"});
+                } 
+            }
         }
         // PUT: api/Customers/5
         [HttpPut("{id}")]
@@ -92,9 +134,12 @@ namespace sw2API.Controllers
                 return BadRequest(ModelState);
             }
 
+            MembershipType membership = await _context.MembershipTypes.FindAsync(customer.MembershipTypeId);
+            customer.MembershipStart = DateTime.Today;
+            customer.MembershipEnd = customer.MembershipStart.AddMonths(membership.DurationInMonths);
+            customer.DaysLeft = membership.DurationInMonths * 30;
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
         }
 

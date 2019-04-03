@@ -13,7 +13,6 @@ namespace sw2API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminOnly")]
     public class MembershipTypesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -51,6 +50,7 @@ namespace sw2API.Controllers
 
         // PUT: api/MembershipTypes/5
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutMembershipType([FromRoute] int id, [FromBody] MembershipType membershipType)
         {
             if (!ModelState.IsValid)
@@ -86,6 +86,7 @@ namespace sw2API.Controllers
 
         // POST: api/MembershipTypes
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PostMembershipType([FromBody] MembershipType membershipType)
         {
             if (!ModelState.IsValid)
@@ -101,6 +102,7 @@ namespace sw2API.Controllers
 
         // DELETE: api/MembershipTypes/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteMembershipType([FromRoute] int id)
         {
             if (!ModelState.IsValid)

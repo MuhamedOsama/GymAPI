@@ -29,5 +29,8 @@ namespace sw2API.Models
         public MembershipType MembershipType { get; set; }
         [ForeignKey("MembershipType")]
         public int MembershipTypeId { get; set; }
+        public DateTime MembershipStart { get; set; }
+        public DateTime MembershipEnd { get; set; }
+        public int DaysLeft { get; set; }
     }
 }
