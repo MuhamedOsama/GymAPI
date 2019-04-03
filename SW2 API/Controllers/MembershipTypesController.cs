@@ -7,62 +7,63 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sw2API.Data;
-using sw2API.Models;
+using sw2API.Entities;
 
 namespace sw2API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class CustomersController : ControllerBase
+    [Authorize(Policy = "AdminOnly")]
+    public class MembershipTypesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public CustomersController(ApplicationDbContext context)
+        public MembershipTypesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Customers
+        // GET: api/MembershipTypes
         [HttpGet]
-        public IEnumerable<Customer> GetCustomers()
+        public IEnumerable<MembershipType> GetMembershipTypes()
         {
-            return _context.Customers;
+            return _context.MembershipTypes;
         }
 
-        // GET: api/Customers/5
+        // GET: api/MembershipTypes/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomer([FromRoute] int id)
+        public async Task<IActionResult> GetMembershipType([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var customer = await _context.Customers.Include("MembershipType").FirstOrDefaultAsync(x => x.Id == id);
+            var membershipType = await _context.MembershipTypes.FindAsync(id);
 
-            if (customer == null)
+            if (membershipType == null)
             {
                 return NotFound();
             }
 
-            return Ok(customer);
+            return Ok(membershipType);
         }
-        // PUT: api/Customers/5
+
+        // PUT: api/MembershipTypes/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer([FromRoute] int id, [FromBody] Customer customer)
+        public async Task<IActionResult> PutMembershipType([FromRoute] int id, [FromBody] MembershipType membershipType)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != customer.Id)
+            if (id != membershipType.MembershipTypeId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
+            _context.Entry(membershipType).State = EntityState.Modified;
 
             try
             {
@@ -70,7 +71,7 @@ namespace sw2API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
+                if (!MembershipTypeExists(id))
                 {
                     return NotFound();
                 }
@@ -83,45 +84,45 @@ namespace sw2API.Controllers
             return NoContent();
         }
 
-        // POST: api/Customers
+        // POST: api/MembershipTypes
         [HttpPost]
-        public async Task<IActionResult> PostCustomer([FromBody] Customer customer)
+        public async Task<IActionResult> PostMembershipType([FromBody] MembershipType membershipType)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Customers.Add(customer);
+            _context.MembershipTypes.Add(membershipType);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
+            return CreatedAtAction("GetMembershipType", new { id = membershipType.MembershipTypeId }, membershipType);
         }
 
-        // DELETE: api/Customers/5
+        // DELETE: api/MembershipTypes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer([FromRoute] int id)
+        public async Task<IActionResult> DeleteMembershipType([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            var membershipType = await _context.MembershipTypes.FindAsync(id);
+            if (membershipType == null)
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(customer);
+            _context.MembershipTypes.Remove(membershipType);
             await _context.SaveChangesAsync();
 
-            return Ok(customer);
+            return Ok(membershipType);
         }
 
-        private bool CustomerExists(int id)
+        private bool MembershipTypeExists(int id)
         {
-            return _context.Customers.Any(e => e.Id == id);
+            return _context.MembershipTypes.Any(e => e.MembershipTypeId == id);
         }
     }
 }

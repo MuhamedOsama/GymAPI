@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using sw2API.Entities;
 
 namespace sw2API.Models
 {
@@ -24,6 +26,8 @@ namespace sw2API.Models
         [Required]
         public byte Gender { get; set; }
         public string EmergencyPhoneNumbr { get; set; }
-
+        public MembershipType MembershipType { get; set; }
+        [ForeignKey("MembershipType")]
+        public int MembershipTypeId { get; set; }
     }
 }

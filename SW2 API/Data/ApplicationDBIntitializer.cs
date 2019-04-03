@@ -4,13 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using sw2API.Entities;
 
 namespace sw2API.Data
 {
     public static class ApplicationDbInitializer
     {
+
         public static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
+            
             if (userManager.FindByNameAsync("admin").Result == null)
             {
                 ApplicationUser user = new ApplicationUser
@@ -26,5 +29,6 @@ namespace sw2API.Data
                 }
             }
         }
+
     }
 }
