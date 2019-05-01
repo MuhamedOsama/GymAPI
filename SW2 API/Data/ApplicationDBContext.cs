@@ -88,5 +88,6 @@ namespace sw2API.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<MembershipType> MembershipTypes { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Checkin> Checkins { get; set; }
     }
 }
