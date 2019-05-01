@@ -133,7 +133,7 @@ namespace sw2API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            //customer.CustomerPicture = DateTime.Now.ToString("yyyyMMddTHHmmss") + customer.CustomerPicture;
             MembershipType membership = await _context.MembershipTypes.FindAsync(customer.MembershipTypeId);
             customer.MembershipStart = DateTime.Today;
             customer.MembershipEnd = customer.MembershipStart.AddMonths(membership.DurationInMonths);

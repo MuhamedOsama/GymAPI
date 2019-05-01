@@ -26,6 +26,8 @@ namespace sw2API.Models
         [Required]
         public byte Gender { get; set; }
         public string EmergencyPhoneNumbr { get; set; }
+        //[Required]
+       // public string CustomerPicture { get; set; } // just a string of the file name
         public MembershipType MembershipType { get; set; }
         [ForeignKey("MembershipType")]
         public int MembershipTypeId { get; set; }
