@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using sw2API.Data;
+using sw2API.Entities;
 using sw2API.Models;
 
 namespace sw2API.Controllers
@@ -36,6 +39,58 @@ namespace sw2API.Controllers
         {
             return _dataContext.Users.Select(u => new {u.Id , u.FirstName, u.LastName, u.UserName, u.PhoneNumber }).Where(u=>u.UserName!="admin").ToList();
 
+        }
+        [HttpGet]
+        [Route("DashboardData")]
+        public ActionResult<IActionResult> DashboardData()
+        {
+            DateTime today = DateTime.Today;
+            Dashboard dashboard = new Dashboard
+            {
+                TotalCustomers = _dataContext.Customers.Count(),
+                TotalEarnings = _dataContext.Transactions.Sum(m => m.PayedAmount),
+                EarningsToday = _dataContext.Transactions.Where(m=>m.TransactionDate.ToString("D") == today.ToString("D")).Sum(m=>m.PayedAmount),
+                TotalCheckinsToday = _dataContext.Checkins.Where(m => m.CheckinDate.ToString("D") == today.ToString("D")).Count()
+            };
+            List<string> MonthsNames = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.ToList();
+            List<string> DaysNames = CultureInfo.CurrentCulture.DateTimeFormat.DayNames.ToList();
+            IQueryable<Checkin> CheckinsForThisMonth = _dataContext.Checkins.Where(m => m.CheckinDate.Month == today.Month);
+            DaysNames.ForEach(day =>
+            {   
+                dashboard.DayCheckins.Add(new DayCheckin
+                {
+                    Day = day,
+                    TotalCheckins = CheckinsForThisMonth.Where( m => CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(m.CheckinDate.DayOfWeek) == day).Count()
+                });
+            });
+            IQueryable<Transaction> EarningsThisYear = _dataContext.Transactions.Where(m => m.TransactionDate.Year == today.Year);
+            MonthsNames.ForEach(month =>
+            {
+                if (month != "")
+                {
+                    dashboard.MonthlyEarnings.Add(new Earning
+                    {
+                        Month = month,
+                        Amount = EarningsThisYear.Where(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.TransactionDate.Month) == month).Sum(m => m.PayedAmount)
+                    });
+                }
+
+            });
+
+            dashboard.EarningsToday = _dataContext.Transactions.Where(m => m.TransactionDate.ToString("D") == today.ToString("D")).Sum(m => m.PayedAmount);
+            var Memberships = _dataContext.MembershipTypes.ToList();
+            Memberships.ForEach(membership =>
+            {
+                Subscription s = new Subscription
+                {
+                    Name = membership.Name,
+                    TotalSubscribers = _dataContext.Customers.Where(m => m.MembershipTypeId == membership.MembershipTypeId).Count()
+
+                };
+                dashboard.Subscriptions.Add(s);
+            });
+
+            return Ok(dashboard);
         }
 
         [HttpPut("{id}")]
