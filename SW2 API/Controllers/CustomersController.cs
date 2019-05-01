@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sw2API.Data;
@@ -18,10 +20,13 @@ namespace sw2API.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CustomersController(ApplicationDbContext context)
+
+        public CustomersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Customers
@@ -75,6 +80,14 @@ namespace sw2API.Controllers
             if (customer != null && customer.DaysLeft == 0)
             {
                 customer.DaysLeft = customer.MembershipType.DurationInMonths * 30;
+                _context.SaveChanges();
+                Transaction transaction = new Transaction
+                {
+                    CustomerId = customer.Id,
+                    PayedAmount = customer.MembershipType.SignUpFee,
+                    TransactionDate = DateTime.Now
+                };
+                _context.Transactions.Add(transaction);
                 await _context.SaveChangesAsync();
                 return Ok(new {customer.DaysLeft});
             }
@@ -133,14 +146,24 @@ namespace sw2API.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
             //customer.CustomerPicture = DateTime.Now.ToString("yyyyMMddTHHmmss") + customer.CustomerPicture;
             MembershipType membership = await _context.MembershipTypes.FindAsync(customer.MembershipTypeId);
             customer.MembershipStart = DateTime.Today;
             customer.MembershipEnd = customer.MembershipStart.AddMonths(membership.DurationInMonths);
             customer.DaysLeft = membership.DurationInMonths * 30;
             _context.Customers.Add(customer);
+            _context.SaveChanges();
+            Transaction transaction = new Transaction
+            {
+                CustomerId = customer.Id,
+                PayedAmount = membership.SignUpFee,
+                TransactionDate = DateTime.Now
+            };
+
+            _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
+            return CreatedAtAction("GetCustomer", new { id = customer.Id }, transaction);
         }
 
         // DELETE: api/Customers/5
