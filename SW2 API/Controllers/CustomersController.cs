@@ -58,18 +58,34 @@ namespace sw2API.Controllers
         [HttpPut("CheckIn/{id}")]
         public async Task<IActionResult> CheckInCustomer([FromRoute] int id)
         {
-           Customer customer = await _context.Customers.FindAsync(id);
-           if (customer != null && customer.DaysLeft>0)
-           {
-               customer.DaysLeft--;
-               var result = _context.SaveChanges();
-               return Ok(new { customer.DaysLeft });
+            Customer customer = await _context.Customers.FindAsync(id);
+            if (customer != null && customer.DaysLeft > 0)
+            {
+                DateTime Today = DateTime.Today;
+                //see if the customer with that id has been checked in today with date format "5/3/2012" before checking in
+                var checkin = _context.Checkins.Where(m => m.CustomerId == customer.Id).FirstOrDefault(m => m.CheckinDate.ToString("D") == Today.ToString("D"));
+                if (checkin == null)
+                {
+                    customer.DaysLeft--;
+                    Checkin TodayCheckin = new Checkin
+                    {
+                        CheckinDate = DateTime.Now,
+                        CustomerId = customer.Id,
+                    };
+                    _context.Checkins.Add(TodayCheckin);
+                    var result = _context.SaveChanges();
+                    return Ok(new { customer.DaysLeft });
+                }
+                else
+                {
+                    return BadRequest("Customer Already has been checked in today");
+                }
             }
-           else
-           {
-               return BadRequest("No customer with that id was found or Customer has no more days left");
-           }
-             
+            else
+            {
+                return BadRequest("No customer with that id was found or Customer has no more days left");
+            }
+
         }
         //PUT: api/customers/RenewMembership/id
         [HttpPut("RenewMembership/{id}")]
