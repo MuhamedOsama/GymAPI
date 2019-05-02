@@ -20,8 +20,13 @@ namespace sw2API.Data
             base.OnModelCreating(builder);
             builder.Entity<ApplicationUser>().ToTable("Users");
             builder.Entity<ApplicationRole>().ToTable("Roles");
+            builder.Entity<IdentityUserRole<string>>().ToTable("UserRole");
+            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaim");
+            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogin");
 
-            
+            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaim");
+            builder.Entity<IdentityUserToken<string>>().ToTable("UserToken");
+
             #region "Seed Data"
 
             builder.Entity<ApplicationRole>().HasData(

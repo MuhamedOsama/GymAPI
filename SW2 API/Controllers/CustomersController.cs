@@ -123,6 +123,7 @@ namespace sw2API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer([FromRoute] int id, [FromBody] Customer customer)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -132,7 +133,25 @@ namespace sw2API.Controllers
             {
                 return BadRequest();
             }
+            var c = _context.Customers.FirstOrDefault(m => m.Id == customer.Id);
+            _context.Entry(c).State = EntityState.Detached;
 
+            if (customer.MembershipTypeId != c.MembershipTypeId)
+            {
+                MembershipType membership = await _context.MembershipTypes.FindAsync(customer.MembershipTypeId);
+                customer.MembershipTypeId = membership.MembershipTypeId;
+                customer.MembershipStart = DateTime.Today;
+                customer.MembershipEnd = customer.MembershipStart.AddMonths(membership.DurationInMonths);
+                customer.DaysLeft = membership.DurationInMonths * 30;
+            }
+            else
+            {
+                customer.MembershipTypeId =c.MembershipTypeId;
+                customer.MembershipStart = c.MembershipStart;
+                customer.MembershipEnd = c.MembershipEnd;
+                customer.DaysLeft = c.DaysLeft;
+            }
+            _context.SaveChanges();
             _context.Entry(customer).State = EntityState.Modified;
 
             try

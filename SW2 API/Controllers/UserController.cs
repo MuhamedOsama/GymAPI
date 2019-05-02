@@ -17,7 +17,6 @@ using sw2API.Models;
 namespace sw2API.Controllers
 {
     [Route("User")]
-    [Authorize(Policy = "AdminOnly")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _dataContext;
@@ -34,14 +33,18 @@ namespace sw2API.Controllers
             return View();
         }
 
+        //get all users except admin
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
         public ActionResult<IEnumerable<Object>> Get()
         {
             return _dataContext.Users.Select(u => new {u.Id , u.FirstName, u.LastName, u.UserName, u.PhoneNumber }).Where(u=>u.UserName!="admin").ToList();
 
         }
+
         [HttpGet]
         [Route("DashboardData")]
+        [Authorize]
         public ActionResult<IActionResult> DashboardData()
         {
             DateTime today = DateTime.Today;
@@ -52,6 +55,7 @@ namespace sw2API.Controllers
                 EarningsToday = _dataContext.Transactions.Where(m=>m.TransactionDate.ToString("D") == today.ToString("D")).Sum(m=>m.PayedAmount),
                 TotalCheckinsToday = _dataContext.Checkins.Where(m => m.CheckinDate.ToString("D") == today.ToString("D")).Count()
             };
+
             List<string> MonthsNames = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.ToList();
             List<string> DaysNames = CultureInfo.CurrentCulture.DateTimeFormat.DayNames.ToList();
             IQueryable<Checkin> CheckinsForThisMonth = _dataContext.Checkins.Where(m => m.CheckinDate.Month == today.Month);
@@ -63,6 +67,7 @@ namespace sw2API.Controllers
                     TotalCheckins = CheckinsForThisMonth.Where( m => CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(m.CheckinDate.DayOfWeek) == day).Count()
                 });
             });
+
             IQueryable<Transaction> EarningsThisYear = _dataContext.Transactions.Where(m => m.TransactionDate.Year == today.Year);
             MonthsNames.ForEach(month =>
             {
@@ -93,7 +98,9 @@ namespace sw2API.Controllers
             return Ok(dashboard);
         }
 
+
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditUser([FromRoute] string id,[FromBody] ApplicationUser model)
         {
             if (id != model.Id)
@@ -118,6 +125,7 @@ namespace sw2API.Controllers
         }
         //register cashier
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         [Route("registerCashier")]
         public async Task<ActionResult> CreateUser([FromBody] RegisterCashierModel model)
         {
@@ -143,6 +151,7 @@ namespace sw2API.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteUser([FromBody] ApplicationUser model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
